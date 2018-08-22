@@ -1,0 +1,27 @@
+<mat-toolbar color="primary">
+  <mat-toolbar-row class="flex-box">
+    <div *ngIf="isBackVisible()" class="flex-box back-box" (click)="goBack()">
+      <mat-icon>arrow_back_ios</mat-icon>
+    </div>
+    <span>Pastoral Visit Manager</span>
+    <div>
+      <button mat-icon-button [matMenuTriggerFor]="menu">
+        <mat-icon>more_vert</mat-icon>
+      </button>
+      <mat-menu #menu="matMenu">
+        <button mat-menu-item>
+          <mat-icon>person</mat-icon>
+          <span>Username</span>
+        </button>
+        <button mat-menu-item>
+          <mat-icon>help</mat-icon>
+          <span>Help</span>
+        </button>
+        <button mat-menu-item>
+          <mat-icon>power_settings_new</mat-icon>
+          <span>Logout</span>
+        </button>
+      </mat-menu>
+    </div>
+  </mat-toolbar-row>
+</mat-toolbar>

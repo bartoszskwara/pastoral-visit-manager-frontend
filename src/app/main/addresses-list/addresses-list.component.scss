@@ -1,0 +1,44 @@
+table {
+  width: 100%;
+
+
+  td {
+    cursor: pointer;
+  }
+
+  tr {
+    &:hover td {
+      background: rgba(255, 255, 255, 0.05);
+    }
+  }
+}
+
+.container {
+  position: relative;
+
+  .loading {
+    width: 100%;
+  }
+
+  .filter {
+    padding: 10px 0 0 10px;
+    background: lightslategrey;
+  }
+
+  .color-light {
+    color: rgba(255,255,255,.7);
+  }
+
+  .edit {
+    &:hover mat-icon {
+      color: white;
+    }
+  }
+
+  .chunk-loading {
+    padding: 15px;
+    color: rgba(255,255,255,.7);
+    background: #424242;
+  }
+}
+

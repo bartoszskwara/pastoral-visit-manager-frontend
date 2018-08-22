@@ -1,0 +1,33 @@
+.container {
+  .form-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    mat-slider {
+      width: 100%;
+    }
+
+    .color-bright {
+      color: rgba(255,255,255,0.7);
+    }
+
+    .slider {
+      width: 100%;
+    }
+
+    .included {
+      width: 100%;
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-start;
+      align-items: center;
+
+      & > * {
+        margin-right: 10px;
+      }
+    }
+
+
+  }
+}

@@ -1,0 +1,45 @@
+<div class="container">
+  <div class="loading flex-center" *ngIf="loading">
+    <mat-spinner></mat-spinner>
+  </div>
+  <mat-card>
+    <mat-card-header>
+      <h1 class="mat-headline">Import</h1>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="flex-center">
+        <mat-form-field>
+          <input type="text" placeholder="Prefix" aria-label="Prefix" matInput [formControl]="importRequestFormControl.prefix">
+        </mat-form-field>
+        <mat-form-field>
+          <input type="text" placeholder="Street name" aria-label="Street name" matInput [formControl]="importRequestFormControl.streetName" [matAutocomplete]="auto1" required>
+          <mat-autocomplete #auto1="matAutocomplete">
+            <mat-option *ngFor="let option of filteredOptions.streetName | async" [value]="option">
+              {{option}}
+            </mat-option>
+          </mat-autocomplete>
+          <mat-error *ngIf="importRequestFormControl.streetName.invalid">{{getStreetNameErrorMessage()}}</mat-error>
+        </mat-form-field>
+        <mat-form-field>
+          <input type="text" placeholder="Block number" aria-label="Block number" matInput [formControl]="importRequestFormControl.blockNumber" [matAutocomplete]="auto2" required>
+          <mat-autocomplete #auto2="matAutocomplete">
+            <mat-option *ngFor="let option of filteredOptions.blockNumber | async" [value]="option">
+              {{option}}
+            </mat-option>
+          </mat-autocomplete>
+          <mat-error *ngIf="importRequestFormControl.blockNumber.invalid">{{getStreetNameErrorMessage()}}</mat-error>
+        </mat-form-field>
+        <mat-form-field>
+          <mat-select [(value)]="importRequestFormControl.priestId" placeholder="Priest">
+            <mat-option value="0">Unknown</mat-option>
+            <mat-option *ngFor="let priest of priests" [value]="priest.id">{{priest.name}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <div class="drop-zone">
+          <drag-and-drop (uploaded)="fileUploaded($event)"></drag-and-drop>
+        </div>
+        <button mat-raised-button color="primary" (click)="send()">Import</button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

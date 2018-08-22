@@ -1,0 +1,56 @@
+<div class="form-container">
+  <mat-form-field>
+    <input matInput placeholder="Prefix" value="{{address != null ? address.prefix : defaultPrefix}}" [formControl]="addressData.prefix.control">
+  </mat-form-field>
+  <mat-form-field>
+    <input matInput placeholder="Street name" value="{{address.streetName}}" [formControl]="addressData.streetName.control" required>
+    <mat-error *ngIf="addressData.streetName.control.invalid">{{getStreetNameErrorMessage()}}</mat-error>
+  </mat-form-field>
+  <mat-form-field>
+    <input matInput placeholder="Block number" value="{{address.blockNumber}}" [formControl]="addressData.blockNumber.control" required>
+    <mat-error *ngIf="addressData.blockNumber.control.invalid">{{getBlockNumberErrorMessage()}}</mat-error>
+  </mat-form-field>
+  <div class="slider">
+    <h1 class="mat-body-1 color-bright">Apartments range</h1>
+    <mat-slider
+      [max]="200"
+      [min]="0"
+      [step]="1"
+      [thumbLabel]="true"
+      tickInterval="30"
+      [(ngModel)]="addressData.apartments.range"
+    >
+    </mat-slider>
+  </div>
+
+  <mat-form-field>
+    <mat-chip-list #includedChips>
+      <mat-chip *ngFor="let chip of addressData.included.chips" [selectable]="true"
+                [removable]="true" (removed)="removeChip(chip, addressData.included.chips)">
+        {{chip}}
+        <mat-icon matChipRemove *ngIf="true">cancel</mat-icon>
+      </mat-chip>
+      <input placeholder="Custom apartments"
+             [matChipInputFor]="includedChips"
+             [matChipInputSeparatorKeyCodes]="separatorKeyCodes"
+             [matChipInputAddOnBlur]="true"
+             (matChipInputTokenEnd)="createChip($event, addressData.included)">
+    </mat-chip-list>
+  </mat-form-field>
+
+  <mat-form-field>
+    <mat-chip-list #excludedChips>
+      <mat-chip *ngFor="let chip of addressData.excluded.chips" [selectable]="true"
+                [removable]="true" (removed)="removeChip(chip, addressData.excluded.chips)">
+        {{chip}}
+        <mat-icon matChipRemove *ngIf="true">cancel</mat-icon>
+      </mat-chip>
+      <input placeholder="Excluded apartments"
+             [matChipInputFor]="excludedChips"
+             [matChipInputSeparatorKeyCodes]="separatorKeyCodes"
+             [matChipInputAddOnBlur]="true"
+             (matChipInputTokenEnd)="createChip($event, addressData.excluded)">
+    </mat-chip-list>
+  </mat-form-field>
+  <button mat-raised-button color="primary" (click)="saveButtonClicked(addressData)">Save</button>
+</div>

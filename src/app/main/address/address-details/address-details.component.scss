@@ -1,0 +1,75 @@
+@import '../../../../../node_modules/@angular/material/theming';
+@include mat-core();
+
+$primary: mat-palette($mat-pink, 600, 500, 900);
+$accent: mat-palette($mat-blue-gray, A400, A300, A600);
+
+
+.bgcolor-primary {
+  background: mat-color($primary);
+}
+
+.bgcolor-accent {
+  background: mat-color($accent);
+}
+
+.loading {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
+.flex-row-start {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.flex-center {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.address-data {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding: 15px;
+}
+
+.summary, .address-title, .address-description {
+  margin: 0px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.summary {
+  margin-right: 50px;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.selected {
+  background: lightslategray !important;
+  color: rgba(255, 255, 255, 1);
+}
+
+table {
+  width: 100%;
+
+  tr {
+    &:hover td {
+      background: rgba(255, 255, 255, 0.05);
+    }
+  }
+}
+
+.pastoral-status-cell {
+  text-align: center;
+}

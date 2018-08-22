@@ -1,0 +1,13 @@
+<div class="container">
+  <mat-card>
+    <mat-card-header>
+      <h1 class="mat-headline">Edit address</h1>
+    </mat-card-header>
+    <mat-card-content>
+      <div *ngIf="loading.main" class="loading">
+        <mat-spinner></mat-spinner>
+      </div>
+      <address-form *ngIf="address != null" [address]="address" (save)="saveAddress($event)"></address-form>
+    </mat-card-content>
+  </mat-card>
+</div>

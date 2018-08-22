@@ -1,0 +1,21 @@
+<div class="drop-zone flex-center" id="target" (drop)="onDrop($event)" (dragover)="onDragOver($event)">
+  <div class="flex-center drop-zone-border">
+    <label for="importFile" class="import-file">
+      <input id="importFile" name="importFile" type="file" (change)="fileSelected($event)" accept="text/csv">
+    </label>
+    <div *ngIf="file == null" class="flex-center info">
+      <mat-icon>cloud_upload</mat-icon>
+      <p>Drag a file here</p>
+      <p>Accepted formats: .csv</p>
+    </div>
+    <div *ngIf="file != null">
+      <div class="flex-center remove-file">
+        <div class="remove-icon" (click)="removeFile()">
+          <mat-icon>clear</mat-icon>
+        </div>
+        <mat-icon>insert_drive_file</mat-icon>
+        <p>{{file.name}}</p>
+      </div>
+    </div>
+  </div>
+</div>

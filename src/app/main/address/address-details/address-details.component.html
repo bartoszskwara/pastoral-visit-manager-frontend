@@ -1,0 +1,97 @@
+<div *ngIf="loading.main" class="loading">
+  <mat-spinner></mat-spinner>
+</div>
+<div *ngIf="!loading.main && address != null" class="flex-center">
+  <div class="flex-row-start bgcolor-accent">
+    <div class="address-data">
+      <div>
+        <div class="address-title mat-title">{{address.prefix}} {{address.streetName}} {{address.blockNumber}}</div>
+        <div class="address-description mat-body-1">Apartments: {{address.apartments.length}}</div>
+      </div>
+      <div class="flex-row-start">
+        <div *ngIf="getLastSeason() != null" class="summary mat-display-1">
+          +{{countCompletedPastoralVisitsInSeason(getLastSeason())}}
+        </div>
+        <div class="cursor-pointer">
+          <mat-icon (click)="goToAddressEdit(address)">edit</mat-icon>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <mat-accordion>
+    <mat-expansion-panel [expanded]="menu.apartments.open">
+      <mat-expansion-panel-header>
+        <mat-panel-title>Apartments</mat-panel-title>
+      </mat-expansion-panel-header>
+      <div *ngIf="loading.apartments" class="loading">
+        <mat-spinner></mat-spinner>
+      </div>
+      <table  *ngIf="!loading.apartments && address != null" class="apartments-table" mat-table [dataSource]="address.apartments" class="mat-elevation-z8">
+
+        <ng-container matColumnDef="apartment">
+          <th mat-header-cell *matHeaderCellDef> Apartment </th>
+          <td mat-cell *matCellDef="let apartment">{{apartment.number}}</td>
+        </ng-container>
+
+        <div *ngIf="seasons.length > 0">
+          <ng-container *ngFor="let season of seasons" matColumnDef="season{{season.name}}">
+            <th [class.selected]="edit.season != null && season.id == edit.season.id" class="pastoral-status-cell" mat-header-cell *matHeaderCellDef>
+              <div class="cursor-pointer" (click)="setSeasonToEdition(season)">{{season.name}}</div>
+            </th>
+            <td [class.selected]="edit.season != null && season.id == edit.season.id" class="pastoral-status-cell" mat-cell *matCellDef="let apartment">
+              {{getPastoralVisitStatus(apartment, season)}}
+            </td>
+          </ng-container>
+        </div>
+
+        <ng-container matColumnDef="edit">
+          <th class="pastoral-status-cell" mat-header-cell *matHeaderCellDef>
+            <div *ngIf="edit.active">pastoral visit status</div>
+          </th>
+          <td class="pastoral-status-cell" mat-cell *matCellDef="let apartment">
+            <div *ngIf="edit.active">
+              <mat-button-toggle-group>
+                <mat-button-toggle [checked]="isCompleted(apartment, this.edit.season)" value="completed" (change)="prepareToSavePastoralVisit(apartment, $event, this.edit.season)">
+                  {{env.pastoralVisitStatus().completed}}
+                </mat-button-toggle>
+                <mat-button-toggle [checked]="isRefused(apartment, this.edit.season)" value="refused" (change)="prepareToSavePastoralVisit(apartment, $event, this.edit.season)">
+                  {{env.pastoralVisitStatus().refused}}
+                </mat-button-toggle>
+                <mat-button-toggle [checked]="isAbsent(apartment, this.edit.season)" value="absent" (change)="prepareToSavePastoralVisit(apartment, $event, this.edit.season)">
+                  {{env.pastoralVisitStatus().absent}}
+                </mat-button-toggle>
+                <mat-button-toggle [checked]="isIndividually(apartment, this.edit.season)" value="individually" (change)="prepareToSavePastoralVisit(apartment, $event, this.edit.season)">
+                  {{env.pastoralVisitStatus().individually}}
+                </mat-button-toggle>
+                <mat-button-toggle [checked]="isNotRequested(apartment, this.edit.season)" value="not_requested" (change)="prepareToSavePastoralVisit(apartment, $event, this.edit.season)">
+                  {{env.pastoralVisitStatus().not_requested}}
+                </mat-button-toggle>
+              </mat-button-toggle-group>
+            </div>
+          </td>
+        </ng-container>
+
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;" (click)="selectApartment(row)"></tr>
+
+      </table>
+
+    </mat-expansion-panel>
+
+    <mat-expansion-panel>
+      <mat-expansion-panel-header>
+        <mat-panel-title>Where is it?</mat-panel-title>
+      </mat-expansion-panel-header>
+      Google Map
+    </mat-expansion-panel>
+    <mat-expansion-panel>
+      <mat-expansion-panel-header>
+        <mat-panel-title>Export panel</mat-panel-title>
+      </mat-expansion-panel-header>
+      <export-address [addressId]="address.id"></export-address>
+    </mat-expansion-panel>
+
+  </mat-accordion>
+</div>

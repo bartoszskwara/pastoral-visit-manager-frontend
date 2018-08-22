@@ -1,0 +1,17 @@
+<mat-dialog-content>
+  <mat-form-field>
+    <mat-select [(value)]="data.priestId" placeholder="Priest">
+      <mat-option value="0">Unknown</mat-option>
+      <mat-option *ngFor="let priest of data.availablePriests" [value]="priest.id">{{priest.name}}</mat-option>
+    </mat-select>
+  </mat-form-field>
+  <mat-form-field>
+    <input matInput [matDatepicker]="picker" placeholder="Date" [(ngModel)]="data.date" >
+    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+    <mat-datepicker #picker startView="year" [startAt]="data.startDate" startView="month"></mat-datepicker>
+  </mat-form-field>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button mat-button [mat-dialog-close]="null">Cancel</button>
+  <button mat-button [mat-dialog-close]="data">Save</button>
+</mat-dialog-actions>

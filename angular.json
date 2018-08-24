@@ -72,6 +72,9 @@
           "configurations": {
             "production": {
               "browserTarget": "frontend:build:production"
+            },
+            "heroku": {
+              "browserTarget": "frontend:build:heroku"
             }
           }
         },

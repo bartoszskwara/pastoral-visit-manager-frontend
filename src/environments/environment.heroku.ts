@@ -1,8 +1,8 @@
 export const environment = {
-  envName: 'prod',
+  envName: 'heroku',
   production: true,
   server: {
-    url: 'http://localhost:8090'
+    url: 'https://pastoral-visit-manager.herokuapp.com'
   },
   dateFormat: "YYYY-MM-DD HH:mm:ss ZZ",
   pastoralVisit: {

@@ -3,10 +3,13 @@
 Running at localhost:
 
 Install angular CLI globally (if not installed):
+
 `npm install -g @angular/cli`
 
 Run the following commands in main directory:
+
 `npm install`
+
 `ng serve --open`
 
 

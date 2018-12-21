@@ -1,6 +1,11 @@
 # UI for Pastoral Visit Manager
 
-Running at localhost:
+### 1. Requirements
+1. Node 8.6.0+ https://nodejs.org/en/
+2. Npm 5.3.0+
+3. Angular Cli 1.6.1+
+
+### 2. Running at localhost:
 
 Install angular CLI globally (if not installed):
 

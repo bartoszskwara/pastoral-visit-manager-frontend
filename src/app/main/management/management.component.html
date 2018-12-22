@@ -1,0 +1,11 @@
+<mat-card>
+  <mat-card-header>
+    <h1 class="mat-headline">Management</h1>
+  </mat-card-header>
+  <mat-card-content>
+    <div *ngIf="loading.initialize" class="loading">
+      <mat-spinner></mat-spinner>
+    </div>
+    <button mat-raised-button color="primary" (click)="initialize()" [disabled]="loading.initialize">Initialize</button>
+  </mat-card-content>
+</mat-card>

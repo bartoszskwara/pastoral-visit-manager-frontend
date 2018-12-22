@@ -56,6 +56,8 @@ import {DragAndDropComponent} from "./bulk-import/drag-and-drop/drag-and-drop.co
 import {MatAutocompleteModule} from '@angular/material/autocomplete';
 import {MatSnackBarModule} from "@angular/material";
 import { AddressesListComponent } from './addresses-list/addresses-list.component';
+import { ManagementComponent } from './management/management.component';
+import {InitializationService} from "./management/service/initialization.service";
 
 @NgModule({
   imports: [
@@ -107,6 +109,7 @@ import { AddressesListComponent } from './addresses-list/addresses-list.componen
     BulkImportComponent,
     DragAndDropComponent,
     AddressesListComponent,
+    ManagementComponent
   ],
   entryComponents: [PastoralVisitDialog],
   providers: [AddressDetailsService,
@@ -118,6 +121,7 @@ import { AddressesListComponent } from './addresses-list/addresses-list.componen
     AddAddressService,
     EditAddressService,
     ImportService,
+    InitializationService
   ]
 })
 export class MainModule { }

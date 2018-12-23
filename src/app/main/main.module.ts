@@ -58,6 +58,8 @@ import {MatSnackBarModule} from "@angular/material";
 import { AddressesListComponent } from './addresses-list/addresses-list.component';
 import { ManagementComponent } from './management/management.component';
 import {InitializationService} from "./management/service/initialization.service";
+import { SelectedAddressesComponent } from './export-address/selected-addresses/selected-addresses.component';
+import {MatTooltipModule} from '@angular/material/tooltip';
 
 @NgModule({
   imports: [
@@ -90,7 +92,8 @@ import {InitializationService} from "./management/service/initialization.service
     MatBadgeModule,
     MatAutocompleteModule,
     MatSnackBarModule,
-    MatProgressBarModule
+    MatProgressBarModule,
+    MatTooltipModule
   ],
   declarations: [
     DashboardComponent,
@@ -109,7 +112,8 @@ import {InitializationService} from "./management/service/initialization.service
     BulkImportComponent,
     DragAndDropComponent,
     AddressesListComponent,
-    ManagementComponent
+    ManagementComponent,
+    SelectedAddressesComponent
   ],
   entryComponents: [PastoralVisitDialog],
   providers: [AddressDetailsService,

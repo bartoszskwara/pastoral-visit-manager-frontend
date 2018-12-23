@@ -3,9 +3,7 @@
     <mat-progress-bar mode="indeterminate"></mat-progress-bar>
   </div>
   <div *ngIf="addresses != null">
-    <div *ngIf="addresses.length == 0">
-      <mat-toolbar>No addresses</mat-toolbar>
-    </div>
+    <selected-addresses [selectedAddresses]="selectedAddresses" (removed)="removeSelectedAddress($event)"></selected-addresses>
     <table class="addresses-table mat-elevation-z8" mat-table [dataSource]="addresses">
 
       <ng-container matColumnDef="select">
@@ -79,5 +77,8 @@
       </div>
 
     </table>
+    <div *ngIf="addresses.length == 0 && !loading">
+      <mat-toolbar>No addresses</mat-toolbar>
+    </div>
   </div>
 </div>

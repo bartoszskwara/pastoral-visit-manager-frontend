@@ -4,9 +4,6 @@
   </div>
 
   <div *ngIf="addresses != null">
-    <div *ngIf="addresses.length == 0 && !loading">
-      <mat-toolbar>No addresses</mat-toolbar>
-    </div>
     <table class="addresses-table mat-elevation-z8" mat-table [dataSource]="addresses">
 
       <ng-container matColumnDef="no.">
@@ -56,6 +53,9 @@
       </div>
 
     </table>
+    <div *ngIf="addresses.length == 0 && !loading">
+      <mat-toolbar>No addresses</mat-toolbar>
+    </div>
   </div>
   <div class="chunk-loading" *ngIf="addresses != null && addresses.length > 0 && loading">
     Loading...

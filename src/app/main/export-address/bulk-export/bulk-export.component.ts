@@ -25,11 +25,11 @@ export class SelectedAddress {
 })
 export class BulkExportComponent implements OnInit {
 
-  private readonly INITIAL_SIZE: number = 20;
+  private readonly INITIAL_LIMIT: number = 20;
   addresses: SimpleAddress[] = [];
   loading: boolean;
-  page: number;
-  size: number;
+  limit: number;
+  offset: number;
   displayedColumns: string[] = ['select', 'address', 'season', 'add-empty-column'];
   filter: Filter;
   selection = new SelectionModel<SimpleAddress>(true, []);
@@ -40,22 +40,32 @@ export class BulkExportComponent implements OnInit {
               private router: Router, private route: ActivatedRoute) {
     this.addresses = [];
     this.loading = false;
-    this.page = 0;
-    this.size = 5;
+    this.offset = 0;
+    this.limit = 5;
     this.filter = {
       name: ''
     };
   }
 
   ngOnInit() {
-    this.getAddresses(this.page, this.INITIAL_SIZE, this.filter);
+    this.getAddresses(this.offset, this.INITIAL_LIMIT, this.filter);
     this.getSeasons();
-    this.page = this.INITIAL_SIZE / this.size;
+    this.offset = this.INITIAL_LIMIT;
   }
 
-  private getChunk(): void {
-    this.page = this.page + 1;
-    this.getAddresses(this.page, this.size, this.filter);
+  getChunk(): void {
+    this.offset = this.addresses.length;
+    this.getAddresses(this.offset, this.limit, this.filter);
+  }
+
+  applyFilter(): void {
+    if(this.filter.name.length == 1 || this.filter.name.length == 2) {
+      return;
+    }
+    this.loading = true;
+    this.offset = 0;
+    this.addresses = [];
+    this.getAddresses(this.offset, this.INITIAL_LIMIT, this.filter);
   }
 
   private getAddresses(page: number, size: number, filter: Filter): void {
@@ -64,7 +74,7 @@ export class BulkExportComponent implements OnInit {
       .subscribe(
         response => {
           if(response.content) {
-            this.addresses = this.addresses.concat(response.content);
+            this.joinAddresses(response.content);
           }
         },
         error => {
@@ -92,20 +102,18 @@ export class BulkExportComponent implements OnInit {
       );
   }
 
-  applyFilter(): void {
-    this.loading = true;
-    this.addressService.fetchAddresses(0, this.INITIAL_SIZE, this.filter.name)
-      .subscribe(
-        response => {
-          this.addresses = response.content;
-        },
-        error => {
-          console.log('error', error);
-          this.loading = false;
-        },
-        () => {
-          this.loading = false;
-        });
+  private joinAddresses(response: SimpleAddress[]): void {
+    let ids = this.addresses.map(a => a.id);
+    let addr = [];
+    response.forEach(a => {
+      if(ids.includes(a.id)) {
+        let index = ids.indexOf(a.id);
+        this.addresses[index] = a;
+      } else {
+        addr.push(a);
+      }
+    });
+    this.addresses = this.addresses.concat(addr);
   }
 
   exportCsv(): void {
@@ -116,8 +124,7 @@ export class BulkExportComponent implements OnInit {
         window.open(url);
       }, error => {
         console.log('download error:', error);
-      }, () => {
-      });
+      }, () => {});
   }
 
   exportPdf(): void {
@@ -128,8 +135,7 @@ export class BulkExportComponent implements OnInit {
         window.open(url);
       }, error => {
         console.log('download error:', error);
-      }, () => {
-      });
+      }, () => {});
   }
 
   updateAllSelection(): void {
@@ -168,6 +174,7 @@ export class BulkExportComponent implements OnInit {
         this.selectedAddresses.splice(index, 1);
       }
     }
+    this.sortAddresses();
   }
 
   static createSelectedAddress(address: SimpleAddress, seasons: Season[]): SelectedAddress {
@@ -271,5 +278,26 @@ export class BulkExportComponent implements OnInit {
       return Array(this.selectedAddresses[index].emptyColumnsCount).fill(1);
     }
     return [];
+  }
+
+  removeSelectedAddress(selectedAddress: SelectedAddress): void {
+    this.markSelected(false, selectedAddress.address, this.seasons.slice(0));
+  }
+
+  private sortAddresses(): void {
+    this.selectedAddresses = this.selectedAddresses.sort((a1, a2) => {
+      let name1 = a1.address.prefix + ' ' + a1.address.streetName;
+      let name2 = a2.address.prefix + ' ' + a2.address.streetName;
+
+      if(name1.localeCompare(name2) == 0) {
+        let num1 = parseInt(a1.address.blockNumber);
+        let num2 = parseInt(a2.address.blockNumber);
+
+        if(num1 > num2) return 1;
+        if(num1 == num2) return 0;
+        if(num1 < num2) return -1;
+      }
+      return name1.localeCompare(name2);
+    })
   }
 }

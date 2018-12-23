@@ -1,0 +1,10 @@
+@import '../../../../../node_modules/@angular/material/theming';
+@include mat-core();
+
+$primary: mat-palette($mat-pink, 600, 500, 900);
+$accent: mat-palette($mat-blue-gray, A400, A300, A600);
+
+.container {
+  background: mat-color($accent);
+  padding: 3px;
+}

@@ -6,6 +6,7 @@ import {environment} from "../../../../environments/environment";
 import {Observable, of} from "rxjs/index";
 import {SimpleAddress} from "../../home/model/SimpleAddress";
 import {Page} from "../../shared/model/Page";
+import {Chunk} from "../../shared/model/Chunk";
 import {BaseService} from "../../shared/message/base.service";
 import {MatSnackBar} from "@angular/material";
 
@@ -20,14 +21,14 @@ export class AddressService extends BaseService {
     super(snackBar);
   }
 
-  fetchAddresses(page: number, size: number, name: string) : Observable<Page<SimpleAddress>> {
+  fetchAddresses(offset: number, limit: number, name: string) : Observable<Chunk<SimpleAddress>> {
     let params = new HttpParams()
-      .append('page', page ? page.toString() : '0')
-      .append('size', size ? size.toString() : '0')
+      .append('offset', offset ? offset.toString() : '0')
+      .append('limit', limit ? limit.toString() : '0')
       .append('name', name);
-    return this.http.get<Page<SimpleAddress>>(`${this.addressUrl}/chunk`, {params: params})
+    return this.http.get<Chunk<SimpleAddress>>(`${this.addressUrl}/chunk`, {params: params})
       .pipe(
-        catchError(this.handleError<Page<SimpleAddress>>("get addresses chunk", new Page()))
+        catchError(this.handleError<Chunk<SimpleAddress>>("get addresses chunk", new Chunk()))
       );
   }
 

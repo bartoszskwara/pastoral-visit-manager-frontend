@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import {SimpleAddress} from "../home/model/SimpleAddress";
 import {AddressService} from "../address/service/address.service";
 import {ActivatedRoute, Router} from "@angular/router";
+import {Chunk} from "../shared/model/Chunk";
 
 export interface Filter {
   name: string;
@@ -14,41 +15,51 @@ export interface Filter {
 })
 export class AddressesListComponent implements OnInit {
 
-  private readonly INITIAL_SIZE: number = 20;
+  private readonly INITIAL_LIMIT: number = 20;
+  limit: number;
+  offset: number;
   addresses: SimpleAddress[] = [];
   loading: boolean;
-  page: number;
-  size: number;
   displayedColumns: string[] = ['no.', 'address', 'apartmentCount', 'addressEdit'];
   filter: Filter;
 
   constructor(private addressService: AddressService, private router: Router, private route: ActivatedRoute) {
     this.addresses = [];
     this.loading = false;
-    this.page = 0;
-    this.size = 5;
+    this.offset = 0;
+    this.limit = 5;
     this.filter = {
       name: ''
     };
   }
 
   ngOnInit() {
-    this.getAddresses(this.page, this.INITIAL_SIZE, this.filter);
-    this.page = this.INITIAL_SIZE / this.size;
+    this.getAddresses(this.offset, this.INITIAL_LIMIT, this.filter);
+    this.offset = this.INITIAL_LIMIT;
   }
 
-  private getChunk(): void {
-    this.page = this.page + 1;
-    this.getAddresses(this.page, this.size, this.filter);
+  getChunk(): void {
+    this.offset = this.addresses.length;
+    this.getAddresses(this.offset, this.limit, this.filter);
   }
 
-  private getAddresses(page: number, size: number, filter: Filter): void {
+  applyFilter(): void {
+    if(this.filter.name.length == 1 || this.filter.name.length == 2) {
+      return;
+    }
     this.loading = true;
-    this.addressService.fetchAddresses(page, size, filter.name)
+    this.offset = 0;
+    this.addresses = [];
+    this.getAddresses(this.offset, this.INITIAL_LIMIT, this.filter);
+  }
+
+  private getAddresses(offset: number, limit: number, filter: Filter): void {
+    this.loading = true;
+    this.addressService.fetchAddresses(offset, limit, filter.name)
       .subscribe(
         response => {
           if(response.content) {
-            this.addresses = this.addresses.concat(response.content);
+            this.joinAddresses(response.content);
           }
         },
         error => {
@@ -61,24 +72,22 @@ export class AddressesListComponent implements OnInit {
         });
   }
 
-  private selectAddress(address: SimpleAddress) {
-    this.router.navigate(['../address', address.id], { relativeTo: this.route });
+  private joinAddresses(response: SimpleAddress[]): void {
+    let ids = this.addresses.map(a => a.id);
+    let addr = [];
+    response.forEach(a => {
+      if(ids.includes(a.id)) {
+        let index = ids.indexOf(a.id);
+        this.addresses[index] = a;
+      } else {
+        addr.push(a);
+      }
+    });
+    this.addresses = this.addresses.concat(addr);
   }
 
-  applyFilter(): void {
-    this.loading = true;
-    this.addressService.fetchAddresses(0, this.INITIAL_SIZE, this.filter.name)
-      .subscribe(
-        response => {
-          this.addresses = response.content;
-        },
-        error => {
-          console.log('error', error);
-          this.loading = false;
-        },
-        () => {
-          this.loading = false;
-        });
+  selectAddress(address: SimpleAddress) {
+    this.router.navigate(['../address', address.id], { relativeTo: this.route });
   }
 
   goToAddressEdit(address: SimpleAddress): void {

@@ -18,10 +18,6 @@ export class ExportAddressService extends BaseService {
     super(snackBar);
   }
 
-  exportToCsv(addressId: number): Observable<Blob> {
-    return this.downloadFile(`${this.exportUrl}/address/${addressId}/format/csv`, this.getResponseTypeBlobOptions());
-  }
-
   exportBulkCsv(data: SelectedAddressDto[]) {
     return this.http.post(`${this.exportUrl}/address/bulk/format/csv`, data, this.getResponseTypeBlobOptions())
       .pipe(

@@ -2,10 +2,11 @@
   <div *ngIf="loading" class="loading">
     <mat-progress-bar mode="indeterminate"></mat-progress-bar>
   </div>
-  <div *ngIf="addresses == null || addresses.length == 0 && !loading">
-    <mat-toolbar>No addresses</mat-toolbar>
-  </div>
-  <div *ngIf="addresses != null && addresses.length > 0">
+
+  <div *ngIf="addresses != null">
+    <div *ngIf="addresses.length == 0 && !loading">
+      <mat-toolbar>No addresses</mat-toolbar>
+    </div>
     <table class="addresses-table mat-elevation-z8" mat-table [dataSource]="addresses">
 
       <ng-container matColumnDef="no.">

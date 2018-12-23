@@ -1,11 +1,17 @@
 <mat-card>
-  <mat-card-header>
-    <h1 class="mat-headline">Management</h1>
-  </mat-card-header>
   <mat-card-content>
+    <h1 class="mat-headline">Management</h1>
+    <h1 class="mat-subheading-2">{{response}}</h1>
     <div *ngIf="loading.initialize" class="loading">
       <mat-spinner></mat-spinner>
     </div>
-    <button mat-raised-button color="primary" (click)="initialize()" [disabled]="loading.initialize">Initialize</button>
+    <ul>
+      <li>
+        <button mat-raised-button color="primary" (click)="initialize()" [disabled]="loading.initialize">Initialize</button>
+      </li>
+      <li>
+        <button mat-raised-button color="primary" (click)="fixAlejaPokoju()" [disabled]="loading.alejaPokoju">Fix 'Aleja' streets</button>
+      </li>
+    </ul>
   </mat-card-content>
 </mat-card>

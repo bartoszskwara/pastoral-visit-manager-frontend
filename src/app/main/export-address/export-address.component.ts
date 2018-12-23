@@ -1,5 +1,8 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {ExportAddressService} from "./service/export-address.service";
+import {SelectedAddressDto} from "./model/SelectedAddressDto";
+import {Season} from "../shared/model/Season";
+import {SeasonService} from "../shared/service/season/season.service";
 
 @Component({
   selector: 'export-address',
@@ -9,6 +12,7 @@ import {ExportAddressService} from "./service/export-address.service";
 export class ExportAddressComponent implements OnInit {
 
   @Input() addressId: number;
+  @Input() seasons: Season[];
 
   constructor(private exportService: ExportAddressService) { }
 
@@ -16,15 +20,34 @@ export class ExportAddressComponent implements OnInit {
   }
 
   exportToCsv(): void {
-    this.exportService.exportToCsv(this.addressId)
+    this.exportService.exportBulkCsv(this.prepareSelectedAddresses())
       .subscribe(res => {
-        let blob = new Blob([res], { type: 'text/csv' });
+        let blob = new Blob([res], { type: 'application/zip' });
         let url= window.URL.createObjectURL(blob);
         window.open(url);
       }, error => {
-        console.log('download error', error);
+        console.log('download error:', error);
       }, () => {
       });
   }
 
+  exportToPdf(): void {
+    this.exportService.exportBulkPdf(this.prepareSelectedAddresses())
+      .subscribe(res => {
+        let blob = new Blob([res], { type: 'application/zip' });
+        let url= window.URL.createObjectURL(blob);
+        window.open(url);
+      }, error => {
+        console.log('download error:', error);
+      }, () => {
+      });
+  }
+
+  prepareSelectedAddresses(): SelectedAddressDto[] {
+    return [{
+        addressId: this.addressId,
+        seasonIds: this.seasons.map(s => s.id),
+        emptyColumnsCount: 0
+      }];
+  }
 }

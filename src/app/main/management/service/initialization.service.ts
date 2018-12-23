@@ -16,10 +16,10 @@ export class InitializationService extends BaseService {
   constructor(public snackBar: MatSnackBar, private http: HttpClient) {
     super(snackBar)
   }
-  public initialize(): Observable<String> {
-    return this.http.get<String>(this.addressUrl)
+  public basicCall(endpoint: string = ''): Observable<any> {
+    return this.http.get<any>(`${this.addressUrl}${endpoint}`)
       .pipe(
-        catchError(this.handleError<String>("initialization error", ""))
+        catchError(this.handleError<any>("initialization error", ""))
       );
   }
 }

@@ -46,7 +46,7 @@ export class ExportAddressComponent implements OnInit {
   prepareSelectedAddresses(): SelectedAddressDto[] {
     return [{
         addressId: this.addressId,
-        seasonIds: this.seasons.map(s => s.id),
+        seasons: this.seasons.map(s => s.id),
         emptyColumnsCount: 0
       }];
   }

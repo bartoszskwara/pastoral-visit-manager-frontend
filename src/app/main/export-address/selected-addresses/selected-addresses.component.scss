@@ -8,3 +8,7 @@ $accent: mat-palette($mat-blue-gray, A400, A300, A600);
   background: mat-color($accent);
   padding: 3px;
 }
+
+.color-grey {
+  color: rgba(255,255,255,.5);
+}

@@ -9,8 +9,11 @@
         <div class="address-description mat-body-1">Apartments: {{address.apartments.length}}</div>
       </div>
       <div class="flex-row-start">
-        <div *ngIf="getLastSeason() != null" class="summary mat-display-1">
-          +{{countCompletedPastoralVisitsInSeason(getLastSeason())}}
+        <div *ngIf="loading.summary">
+          <mat-spinner [diameter]="25"></mat-spinner>
+        </div>
+        <div *ngIf="lastSeasonSummary != null && !loading.summary" class="summary mat-display-1">
+          +{{lastSeasonSummary}}
         </div>
         <div class="cursor-pointer">
           <mat-icon (click)="goToAddressEdit(address)">edit</mat-icon>

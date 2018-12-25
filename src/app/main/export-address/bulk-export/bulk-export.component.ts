@@ -145,7 +145,12 @@ export class BulkExportComponent implements OnInit {
 
   select(event: MatCheckboxChange, address: SimpleAddress) {
     let checked = event ? event.checked : false;
-    this.markSelected(checked, address, this.seasons.slice(0));
+    let seasonsToCheck = this.getNotCurrentSeasons();
+    this.markSelected(checked, address, seasonsToCheck);
+  }
+
+  private getNotCurrentSeasons(): Season[] {
+    return this.seasons.filter(s => !s.current);
   }
 
   markSelected(selected: boolean, address: SimpleAddress, seasons: Season[]) {

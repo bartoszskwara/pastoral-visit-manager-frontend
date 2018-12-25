@@ -1,7 +1,6 @@
 <mat-dialog-content>
   <mat-form-field>
     <mat-select [(value)]="data.priestId" placeholder="Priest">
-      <mat-option value="0">Unknown</mat-option>
       <mat-option *ngFor="let priest of data.availablePriests" [value]="priest.id">{{priest.name}}</mat-option>
     </mat-select>
   </mat-form-field>

@@ -1,7 +1,7 @@
 <mat-accordion *ngIf="selectedAddresses && selectedAddresses.length > 0">
   <mat-expansion-panel [expanded]="true">
     <mat-expansion-panel-header>
-      <mat-panel-title>Selected addresses</mat-panel-title>
+      <mat-panel-title>Selected addresses<span class="color-grey">&nbsp;({{selectedAddresses.length}})</span></mat-panel-title>
     </mat-expansion-panel-header>
 
     <mat-chip-list>

@@ -28,6 +28,7 @@ export class AddressDetailsComponent implements OnInit {
   loading: {
     apartments: boolean;
     main: boolean;
+    summary: boolean;
   };
   displayedColumns: string[] = ['apartment', 'edit'];
   edit: {
@@ -40,15 +41,12 @@ export class AddressDetailsComponent implements OnInit {
   };
   seasons: Season[] = [];
   priests: Priest[] = [];
+  lastSeasonSummary: number = null;
   menu: {
     apartments: {
       open: boolean;
     }
   };
-  private VISIT_COMPLETED_STATUS = [
-    this.env.pastoralVisitStatus().completed,
-    this.env.pastoralVisitStatus().individually
-  ];
 
   constructor(private seasonService: SeasonService, private addressService: AddressDetailsService,
               private pastoralVisitService: PastoralVisitService, public env: EnvironmentService,
@@ -57,7 +55,8 @@ export class AddressDetailsComponent implements OnInit {
               private route: ActivatedRoute, private router: Router) {
     this.loading = {
       apartments: false,
-      main: false
+      main: false,
+      summary: false
     };
     this.edit = {
       active: false,
@@ -85,7 +84,16 @@ export class AddressDetailsComponent implements OnInit {
         error => {
           console.log('error', error);
         },
-        () => {}
+        () => {
+          this.edit = {
+            active: false,
+            season: null,
+            newPastoralVisit: {
+              priestId: this.getCurrentLoggedPriestId(),
+              date: moment()
+            }
+          };
+        }
         );
     this.seasonService.fetchSeasons()
       .subscribe(
@@ -98,14 +106,6 @@ export class AddressDetailsComponent implements OnInit {
         },
         () => {
           this.createSeasonColumns();
-          this.edit = {
-            active: false,
-            season: null,
-            newPastoralVisit: {
-              priestId: this.getCurrentLoggedPriestId(),
-              date: moment()
-            }
-          };
         }
       );
   }
@@ -123,6 +123,7 @@ export class AddressDetailsComponent implements OnInit {
         },
         () => {
           this.loading.main = false;
+          this.countCompletedPastoralVisitsInLastSeason();
         });
   }
 
@@ -153,7 +154,7 @@ export class AddressDetailsComponent implements OnInit {
         seasonId: season.id
       };
 
-      this.pastoralVisitService.savePastoralVisit(pastoralVisit, this.getApplicationJsonHeaders())
+      this.pastoralVisitService.savePastoralVisit(pastoralVisit)
         .subscribe(
           pastoralVisit => {
           },
@@ -193,16 +194,20 @@ export class AddressDetailsComponent implements OnInit {
     return null;
   }
 
-  private countCompletedPastoralVisitsInSeason(season: Season): number {
-    let count = 0;
-    for(let apartment of this.address.apartments) {
-      for(let visit of apartment.pastoralVisits) {
-        if(visit.seasonId == season.id && this.VISIT_COMPLETED_STATUS.includes(visit.value)) {
-          count++;
-        }
-      }
-    }
-    return count;
+  private countCompletedPastoralVisitsInLastSeason(): void {
+    this.loading.summary = true;
+    this.pastoralVisitService.countCompletedPastoralVisitsInLastSeason(this.address.id)
+      .subscribe(
+        response => {
+          this.lastSeasonSummary = response.count;
+        },
+        error => {
+          this.loading.summary = false;
+          console.log('error', error);
+        },
+        () => {
+          this.loading.summary = false;
+        });
   }
 
   private toggleEditMode(): void {
@@ -242,7 +247,7 @@ export class AddressDetailsComponent implements OnInit {
       return;
     }
 
-    this.pastoralVisitService.savePastoralVisit(pastoralVisit, this.getApplicationJsonHeaders())
+    this.pastoralVisitService.savePastoralVisit(pastoralVisit)
       .subscribe(
         pastoralVisit => {
         },
@@ -253,14 +258,6 @@ export class AddressDetailsComponent implements OnInit {
           this.getAddress(this.address.id);
           this.menu.apartments.open = true;
         });
-  }
-
-  private getApplicationJsonHeaders(): object {
-    return {
-      headers: new HttpHeaders({
-        'Content-Type':  'application/json'
-      })
-    };
   }
 
   private getPastoralVisitFromSeason(apartment: Apartment, season: Season) {
@@ -297,7 +294,11 @@ export class AddressDetailsComponent implements OnInit {
 
   private getCurrentLoggedPriestId(): number {
     //TODO
-    return 3;
+    return this.getUnknownPriestId();
+  }
+
+  private getUnknownPriestId() {
+    return this.priests.filter(p => p.name == 'Unknown Priest')[0].id;
   }
 
   private getCurrentDateIfInSeasonOrFirstInSeason(): Moment {

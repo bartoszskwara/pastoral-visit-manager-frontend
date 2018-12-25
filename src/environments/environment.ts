@@ -14,7 +14,7 @@ export const environment = {
       completed: '+',
       refused: '-',
       absent: '?',
-      individually: 'ind.',
+      individually: 'ind',
       not_requested: 'x'
     }
   }

@@ -1,0 +1,16 @@
+<div class="wrapper">
+  <mat-form-field>
+    <mat-chip-list #emptyColumnList class="empty-column-list">
+      <mat-chip *ngFor="let column of emptyColumns" [selectable]="false"
+                [removable]="true" (removed)="removeEmptyColumn(column)">
+        {{column.name}}
+        <mat-icon matChipRemove>cancel</mat-icon>
+      </mat-chip>
+      <input placeholder="Empty column names"
+             [matChipInputFor]="emptyColumnList"
+             [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+             [matChipInputAddOnBlur]="true"
+             (matChipInputTokenEnd)="addEmptyColumn($event)">
+    </mat-chip-list>
+  </mat-form-field>
+</div>

@@ -1,7 +1,7 @@
 table {
   width: 100%;
 
-  td {
+  .cursor-pointer {
     cursor: pointer;
   }
 
@@ -25,7 +25,6 @@ mat-button-toggle {
   margin-left: 5px;
 }
 
-
 .container {
 
   .loading {
@@ -36,4 +35,13 @@ mat-button-toggle {
     left: 0;
     width: 100%;
   }
+}
+
+tr.expanded-details {
+  height: 0;
+}
+
+.expandedDetails {
+  overflow: hidden;
+  padding-top: 4px;
 }

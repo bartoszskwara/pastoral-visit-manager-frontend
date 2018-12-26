@@ -1,5 +1,7 @@
+import {EmptyColumn} from "./EmptyColumn";
+
 export class SelectedAddressDto {
   addressId: number;
   seasons: number[];
-  emptyColumnsCount: number;
+  emptyColumns: EmptyColumn[];
 }

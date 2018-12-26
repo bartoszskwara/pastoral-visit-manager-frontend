@@ -19,8 +19,8 @@ export class SelectedAddressesComponent implements OnInit {
   tooltipMessage(address: SelectedAddress) {
     let message: string[] = [];
     address.seasons.forEach(s => message.push(s.name));
-    let result = message.join(', ');
-    return address.emptyColumnsCount > 0 ? result.concat(' + ').concat(`${address.emptyColumnsCount}`) : result;
+    address.emptyColumns.forEach(c => message.push(c.name));
+    return message.join(', ');
   }
 
   removeSelectedAddress(address: SelectedAddress) {

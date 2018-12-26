@@ -47,7 +47,7 @@ export class ExportAddressComponent implements OnInit {
     return [{
         addressId: this.addressId,
         seasons: this.seasons.map(s => s.id),
-        emptyColumnsCount: 0
+        emptyColumns: []
       }];
   }
 }

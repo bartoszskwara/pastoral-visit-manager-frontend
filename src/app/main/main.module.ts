@@ -60,6 +60,7 @@ import { ManagementComponent } from './management/management.component';
 import {InitializationService} from "./management/service/initialization.service";
 import { SelectedAddressesComponent } from './export-address/selected-addresses/selected-addresses.component';
 import {MatTooltipModule} from '@angular/material/tooltip';
+import { EmptyColumnNameComponent } from './export-address/bulk-export/empty-column-name/empty-column-name.component';
 
 @NgModule({
   imports: [
@@ -113,7 +114,8 @@ import {MatTooltipModule} from '@angular/material/tooltip';
     DragAndDropComponent,
     AddressesListComponent,
     ManagementComponent,
-    SelectedAddressesComponent
+    SelectedAddressesComponent,
+    EmptyColumnNameComponent
   ],
   entryComponents: [PastoralVisitDialog],
   providers: [AddressDetailsService,

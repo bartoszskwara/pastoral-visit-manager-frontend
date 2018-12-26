@@ -8,20 +8,30 @@ import {SeasonService} from "../../shared/service/season/season.service";
 import {Season} from "../../shared/model/Season";
 import {ExportAddressService} from "../service/export-address.service";
 import {SelectedAddressDto} from "../model/SelectedAddressDto";
+import {EmptyColumn} from "../model/EmptyColumn";
+import {animate, state, style, transition, trigger} from '@angular/animations';
 
 export interface Filter {
   name: string;
 }
+
 export class SelectedAddress {
   address: SimpleAddress;
   seasons: Season[];
-  emptyColumnsCount: number;
+  emptyColumns: EmptyColumn[];
 }
 
 @Component({
   selector: 'bulk-export',
   templateUrl: './bulk-export.component.html',
-  styleUrls: ['./bulk-export.component.scss']
+  styleUrls: ['./bulk-export.component.scss'],
+  animations: [
+    trigger('detailExpand', [
+      state('collapsed', style({height: '0px', minHeight: '0', display: 'none'})),
+      state('expanded', style({height: '*'})),
+      transition('expanded <=> collapsed', animate('225ms cubic-bezier(0.4, 0.0, 0.2, 1)')),
+    ]),
+  ],
 })
 export class BulkExportComponent implements OnInit {
 
@@ -30,11 +40,12 @@ export class BulkExportComponent implements OnInit {
   loading: boolean;
   limit: number;
   offset: number;
-  displayedColumns: string[] = ['select', 'address', 'season', 'add-empty-column'];
+  displayedColumns: string[] = ['select', 'address', 'season'];
   filter: Filter;
   selection = new SelectionModel<SimpleAddress>(true, []);
   selectedAddresses: SelectedAddress[] = [];
   seasons: Season[];
+  expandedAddress: SimpleAddress = null;
 
   constructor(private addressService: AddressService, private seasonService: SeasonService, private exportService: ExportAddressService,
               private router: Router, private route: ActivatedRoute) {
@@ -179,14 +190,13 @@ export class BulkExportComponent implements OnInit {
         this.selectedAddresses.splice(index, 1);
       }
     }
-    this.sortAddresses();
   }
 
   static createSelectedAddress(address: SimpleAddress, seasons: Season[]): SelectedAddress {
     return {
       address: address,
       seasons: seasons,
-      emptyColumnsCount: 0
+      emptyColumns: []
     }
   }
 
@@ -204,7 +214,7 @@ export class BulkExportComponent implements OnInit {
       this.selection.clear();
       this.selectedAddresses = [];
     } else {
-      this.addresses.forEach(a => this.markSelected(true, a, this.seasons.slice(0)));
+      this.addresses.forEach(a => this.markSelected(true, a, this.getNotCurrentSeasons()));
     }
   }
 
@@ -240,69 +250,79 @@ export class BulkExportComponent implements OnInit {
     }
     index = this.selectedAddresses.map(a => a.address.id).indexOf(address.id);
     selectedAddress = this.selectedAddresses[index];
-    if(selectedAddress.seasons.length == 0 && selectedAddress.emptyColumnsCount == 0) {
+    if(selectedAddress.seasons.length == 0 && selectedAddress.emptyColumns.length == 0) {
       this.markSelected(false, address, []);
     }
   }
 
   prepareSelectedAddresses(): SelectedAddressDto[] {
-    let result = [];
+    let result: SelectedAddressDto[] = [];
     this.selectedAddresses.forEach(a => {
-      let dto = {
+      result.push({
         addressId: a.address.id,
         seasons: a.seasons.map(s => s.id),
-        emptyColumnsCount: a.emptyColumnsCount
-      };
-      result.push(dto);
+        emptyColumns: a.emptyColumns
+      });
     });
     return result;
   }
 
-  addEmptyColumn(address: SimpleAddress) {
+  removeEmptyColumn(address: SimpleAddress, column: EmptyColumn) {
     let index = this.selectedAddresses.map(a => a.address.id).indexOf(address.id);
-    if(index > -1) {
-      this.selectedAddresses[index].emptyColumnsCount++;
-    }
-    else {
-      this.markSelected(true, address, []);
-      let i = this.selectedAddresses.map(a => a.address.id).indexOf(address.id);
-      this.selectedAddresses[i].emptyColumnsCount++;
+    if (index > -1) {
+      let columnIndex = this.selectedAddresses[index].emptyColumns.map(c => c.id).indexOf(column.id);
+      this.selectedAddresses[index].emptyColumns.splice(columnIndex, 1);
+      if(this.selectedAddresses[index].emptyColumns.length == 0 && this.selectedAddresses[index].seasons.length == 0) {
+        this.markSelected(false, address, []);
+      }
     }
   }
 
-  removeEmptyColumn(address: SimpleAddress) {
-    let index = this.selectedAddresses.map(a => a.address.id).indexOf(address.id);
-    if(index > -1) {
-      this.selectedAddresses[index].emptyColumnsCount--;
+  countEmptyColumns(address: SimpleAddress): number {
+    if(this.selectedAddresses == null || address == null) {
+      return 0;
     }
-  }
-
-  mapNumberOfEmptyColumnsToCollection(address: SimpleAddress): number[] {
-    let index = this.selectedAddresses.map(a => a.address.id).indexOf(address.id);
-    if(index > -1) {
-      return Array(this.selectedAddresses[index].emptyColumnsCount).fill(1);
+    let selectedAddress = this.selectedAddresses.filter(a => a.address.id == address.id);
+    if(selectedAddress != null && selectedAddress.length > 0 && selectedAddress[0].emptyColumns != null) {
+      return selectedAddress[0].emptyColumns.length;
+    } else {
+      return 0;
     }
-    return [];
   }
 
   removeSelectedAddress(selectedAddress: SelectedAddress): void {
     this.markSelected(false, selectedAddress.address, this.seasons.slice(0));
   }
 
-  private sortAddresses(): void {
-    this.selectedAddresses = this.selectedAddresses.sort((a1, a2) => {
-      let name1 = a1.address.prefix + ' ' + a1.address.streetName;
-      let name2 = a2.address.prefix + ' ' + a2.address.streetName;
+  public toggleExpandedAddress(address: SimpleAddress): void {
+    if(this.expandedAddress != null && this.expandedAddress.id == address.id) {
+      this.expandedAddress = null;
+    } else {
+      this.expandedAddress = address;
+    }
+  }
 
-      if(name1.localeCompare(name2) == 0) {
-        let num1 = parseInt(a1.address.blockNumber);
-        let num2 = parseInt(a2.address.blockNumber);
+  public emptyColumnNameChanged(address: SimpleAddress, column: EmptyColumn): void {
+    let index = this.selectedAddresses.map(a => a.address.id).indexOf(column.addressId);
+    if(index < 0) {
+      this.markSelected(true, address, []);
+    }
+    let selectedAddress = this.selectedAddresses.filter(sa => sa.address.id == address.id)[0];
+    let emptyColumnsById = selectedAddress.emptyColumns.filter(c => c.id == column.id);
+    if(emptyColumnsById == null || emptyColumnsById.length == 0) {
+      selectedAddress.emptyColumns.push(column);
+    } else {
+      emptyColumnsById[0] = column;
+    }
+  }
 
-        if(num1 > num2) return 1;
-        if(num1 == num2) return 0;
-        if(num1 < num2) return -1;
-      }
-      return name1.localeCompare(name2);
-    })
+  public emptyColumnNamesByAddress(address: SimpleAddress): string {
+    let message: string[] = [];
+    let selectedAddress = this.selectedAddresses.filter(a => a.address.id == address.id);
+    if(selectedAddress && selectedAddress.length > 0) {
+      selectedAddress[0].emptyColumns.forEach(c => message.push(c.name));
+      return message.join(', ');
+    }
+    return null;
   }
 }

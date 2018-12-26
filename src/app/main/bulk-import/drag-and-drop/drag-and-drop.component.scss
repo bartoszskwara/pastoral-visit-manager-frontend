@@ -2,12 +2,16 @@
 @include mat-core();
 
 $primary: mat-palette($mat-pink, 600, 500, 900);
-$accent: mat-palette($mat-blue-gray, A400, A300, A600);
+$accent: mat-palette($mat-amber, A100, A200, A300);
 
 .drop-zone {
   height: 200px;
   background: mat-color($accent);
   position: relative;
+
+  mat-icon {
+    color: black;
+  }
 }
 
 .drop-zone-border {
@@ -82,4 +86,5 @@ $accent: mat-palette($mat-blue-gray, A400, A300, A600);
 .info p {
   padding: 0;
   margin: 5px 0 0 0;
+  color: black;
 }

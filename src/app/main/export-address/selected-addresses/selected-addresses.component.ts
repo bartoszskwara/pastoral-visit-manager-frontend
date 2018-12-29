@@ -18,7 +18,7 @@ export class SelectedAddressesComponent implements OnInit {
 
   tooltipMessage(address: SelectedAddress) {
     let message: string[] = [];
-    address.seasons.forEach(s => message.push(s.name));
+    address.seasons.sort((s1, s2) => s1.id - s2.id).forEach(s => message.push(s.name));
     address.emptyColumns.forEach(c => message.push(c.name));
     return message.join(', ');
   }

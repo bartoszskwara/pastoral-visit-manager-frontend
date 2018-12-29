@@ -4,7 +4,6 @@ import {HttpClient, HttpHeaders, HttpParams} from "@angular/common/http";
 import {catchError} from "rxjs/internal/operators";
 import {environment} from "../../../../environments/environment";
 import {Observable, of} from "rxjs/index";
-import {Page} from "../../shared/model/Page";
 import {BaseService} from "../../shared/message/base.service";
 import {MatSnackBar} from "@angular/material";
 

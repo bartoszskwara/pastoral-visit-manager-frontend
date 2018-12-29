@@ -1,11 +1,9 @@
 import { Injectable } from '@angular/core';
 import {catchError, tap} from "rxjs/internal/operators";
 import {HttpClient, HttpParams} from "@angular/common/http";
-import {Address} from "../../shared/model/Address";
 import {environment} from "../../../../environments/environment";
 import {Observable, of} from "rxjs/index";
 import {SimpleAddress} from "../../home/model/SimpleAddress";
-import {Page} from "../../shared/model/Page";
 import {Chunk} from "../../shared/model/Chunk";
 import {BaseService} from "../../shared/message/base.service";
 import {MatSnackBar} from "@angular/material";

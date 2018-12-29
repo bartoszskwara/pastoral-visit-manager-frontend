@@ -128,25 +128,33 @@ export class BulkExportComponent implements OnInit {
   }
 
   exportCsv(): void {
+    this.loading = true;
     this.exportService.exportBulkCsv(this.prepareSelectedAddresses())
       .subscribe(res => {
         let blob = new Blob([res], { type: 'application/zip' });
         let url= window.URL.createObjectURL(blob);
         window.open(url);
       }, error => {
+        this.loading = false;
         console.log('download error:', error);
-      }, () => {});
+      }, () => {
+        this.loading = false;
+      });
   }
 
   exportPdf(): void {
+    this.loading = true;
     this.exportService.exportBulkPdf(this.prepareSelectedAddresses())
       .subscribe(res => {
         let blob = new Blob([res], { type: 'application/zip' });
         let url= window.URL.createObjectURL(blob);
         window.open(url);
       }, error => {
+        this.loading = false;
         console.log('download error:', error);
-      }, () => {});
+      }, () => {
+        this.loading = false;
+      });
   }
 
   updateAllSelection(): void {
@@ -214,7 +222,17 @@ export class BulkExportComponent implements OnInit {
       this.selection.clear();
       this.selectedAddresses = [];
     } else {
-      this.addresses.forEach(a => this.markSelected(true, a, this.getNotCurrentSeasons()));
+      this.addresses.forEach(a => {
+        let seasons = this.getNotCurrentSeasons();
+        let selectedAddress = this.selectedAddresses.filter(sa => sa.address.id == a.id);
+        if(selectedAddress && selectedAddress.length > 0) {
+          let currentSeason = selectedAddress[0].seasons.filter(s => s.current);
+          if(currentSeason && currentSeason.length > 0) {
+            seasons.push(currentSeason[0]);
+          }
+        }
+        this.markSelected(true, a, seasons);
+      });
     }
   }
 
@@ -324,5 +342,61 @@ export class BulkExportComponent implements OnInit {
       return message.join(', ');
     }
     return null;
+  }
+
+  public isSeasonCheckedInAllSelectedAddresses(season: Season): boolean {
+    if(!this.selectedAddresses || this.selectedAddresses.length == 0) {
+      return false;
+    }
+
+    let addressesWithoutSeason = this.selectedAddresses.filter(a => {
+      if(!a.seasons || a.seasons.length == 0) {
+        return true;
+      } else {
+        return a.seasons.filter(s => s.id == season.id).length <= 0;
+      }
+    });
+    return addressesWithoutSeason.length == 0 && (this.addresses && this.selectedAddresses.length == this.addresses.length);
+  }
+
+  public isSeasonCheckedInSomeSelectedAddresses(season: Season): boolean {
+    if(!this.selectedAddresses || this.selectedAddresses.length == 0) {
+      return false;
+    }
+
+    let addressesWithSeason = this.selectedAddresses.filter(a => {
+      if(!a.seasons || a.seasons.length == 0) {
+        return false;
+      } else {
+        return a.seasons.filter(s => s.id == season.id).length > 0;
+      }
+    });
+    return addressesWithSeason.length > 0 && (this.addresses && addressesWithSeason.length < this.addresses.length);
+  }
+
+  public selectSeasonForAllAddresses(season: Season, event: MatButtonToggleChange) {
+    if(!event || !event.source) {
+      return;
+    }
+    this.addresses.forEach(a => {
+      let seasons: Season[] = [season];
+      let selectedAddress = this.selectedAddresses.filter(sa => sa.address.id == a.id);
+      if(selectedAddress && selectedAddress.length > 0) {
+        if(event.source.checked) {
+          seasons = Array.from(new Set(seasons.concat(selectedAddress[0].seasons)));
+        } else {
+          let containsSeason = selectedAddress[0].seasons.map(s => s.id).includes(season.id);
+          if(containsSeason) {
+            let index = selectedAddress[0].seasons.indexOf(season);
+            selectedAddress[0].seasons.splice(index, 1);
+            seasons = selectedAddress[0].seasons;
+            this.removeSelectedAddress(selectedAddress[0]);
+          }
+        }
+      }
+      if(seasons && seasons.length > 0) {
+        this.markSelected(true, a, seasons);
+      }
+    });
   }
 }

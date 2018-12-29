@@ -9,6 +9,10 @@ table {
     &:hover td {
      background: rgba(255, 255, 255, 0.05);
     }
+
+    &.header-row th {
+      background: rgba(255, 255, 255, 0.1);
+    }
   }
 }
 

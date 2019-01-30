@@ -3,12 +3,12 @@
     <mat-progress-bar mode="indeterminate"></mat-progress-bar>
   </div>
   <div *ngIf="addresses != null">
-    <selected-addresses [selectedAddresses]="selectedAddresses" (removed)="removeSelectedAddress($event)"></selected-addresses>
+    <selected-addresses [selectedAddresses]="sorted(selectedAddresses)" (removed)="removeSelectedAddress($event)"></selected-addresses>
     <table class="addresses-table mat-elevation-z8" mat-table [dataSource]="addresses" multiTemplateDataRows>
 
       <ng-container matColumnDef="select">
         <th mat-header-cell *matHeaderCellDef>
-          <mat-checkbox (change)="$event ? masterToggle() : null"
+          <mat-checkbox (change)="$event ? toggleCurrentFetched() : null"
                         [checked]="selection.hasValue() && isAllSelected()"
                         [indeterminate]="selection.hasValue() && !isAllSelected()">
           </mat-checkbox>

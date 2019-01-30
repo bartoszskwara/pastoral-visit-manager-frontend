@@ -217,7 +217,7 @@ export class BulkExportComponent implements OnInit {
     return selectedAddress.seasons.map(s => s.id).includes(season.id);
   }
 
-  masterToggle() {
+  toggleCurrentFetched() {
     if(this.isAllSelected()) {
       this.selection.clear();
       this.selectedAddresses = [];
@@ -398,5 +398,24 @@ export class BulkExportComponent implements OnInit {
         this.markSelected(true, a, seasons);
       }
     });
+  }
+
+  private sorted(addresses: SelectedAddress[]): SelectedAddress[] {
+    return addresses.sort((a1, a2) => {
+      let name1 = a1.address.prefix + a1.address.streetName;
+      let name2 = a2.address.prefix + a2.address.streetName;
+      let result = name1.localeCompare(name2);
+      if(result != 0) {
+        return result;
+      }
+      let num1 = parseInt(a1.address.blockNumber.replace( /\D+/g, ''));
+      let num2 = parseInt(a2.address.blockNumber.replace( /\D+/g, ''));
+      if(num1 - num2 != 0) {
+        return num1 - num2;
+      }
+      let letter1 = a1.address.blockNumber.replace( /\d+/g, '');
+      let letter2 = a2.address.blockNumber.replace( /\d+/g, '');
+      return letter1.localeCompare(letter2);
+    })
   }
 }

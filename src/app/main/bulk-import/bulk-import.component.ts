@@ -30,7 +30,10 @@ export interface FilteredOptions {
 export class BulkImportComponent implements OnInit {
 
   private importRequestFile: File = null;
-  loading: boolean = false;
+  loading = {
+    import: false,
+    template: false
+  };
   streetNames: string[] = [];
   blockNumbers: string[] = [];
   filteredOptions: FilteredOptions = {
@@ -74,17 +77,17 @@ export class BulkImportComponent implements OnInit {
       return;
     }
     let data = this.prepareData();
-    this.loading = true;
+    this.loading.import = true;
     this.importService.bulkImport(data)
       .subscribe(
         response => {
         },
         error => {
-          this.loading = false;
+          this.loading.import = false;
           console.log('error', error);
         },
         () => {
-          this.loading = false;
+          this.loading.import = false;
           this.resetAll();
         });
   }
@@ -193,5 +196,20 @@ export class BulkImportComponent implements OnInit {
     && this.importRequestFormControl.blockNumber.valid
     && this.importRequestFormControl.priestId >= 0
     && this.importRequestFile != null;
+  }
+
+  downloadTemplate(): void {
+    this.loading.template = true;
+    this.importService.downloadTemplate()
+      .subscribe(res => {
+        let blob = new Blob([res], { type: 'text/csv' });
+        let url= window.URL.createObjectURL(blob);
+        window.open(url);
+      }, error => {
+        this.loading.template = false;
+        console.log('download error:', error);
+      }, () => {
+        this.loading.template = false;
+      });
   }
 }

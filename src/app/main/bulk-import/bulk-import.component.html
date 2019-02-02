@@ -1,5 +1,5 @@
 <div class="container">
-  <div class="loading flex-center" *ngIf="loading">
+  <div class="loading flex-center" *ngIf="loading.import">
     <mat-spinner></mat-spinner>
   </div>
   <mat-card>
@@ -31,7 +31,6 @@
         </mat-form-field>
         <mat-form-field>
           <mat-select [(value)]="importRequestFormControl.priestId" placeholder="Priest">
-            <mat-option value="0">Unknown</mat-option>
             <mat-option *ngFor="let priest of priests" [value]="priest.id">{{priest.name}}</mat-option>
           </mat-select>
         </mat-form-field>
@@ -39,6 +38,7 @@
           <drag-and-drop (uploaded)="fileUploaded($event)"></drag-and-drop>
         </div>
         <button mat-raised-button color="primary" (click)="send()">Import</button>
+        <button mat-raised-button color="accent" (click)="downloadTemplate()" [disabled]="loading.template" class="margin-top">Download template</button>
       </div>
     </mat-card-content>
   </mat-card>

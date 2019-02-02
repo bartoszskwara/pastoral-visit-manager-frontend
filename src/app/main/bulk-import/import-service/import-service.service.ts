@@ -5,6 +5,7 @@ import {environment} from "../../../../environments/environment";
 import {Observable} from "rxjs/index";
 import {BaseService} from "../../shared/message/base.service";
 import {MatSnackBar} from "@angular/material";
+import {SelectedAddressDto} from "../../export-address/model/SelectedAddressDto";
 
 @Injectable({
   providedIn: 'root'
@@ -12,6 +13,7 @@ import {MatSnackBar} from "@angular/material";
 export class ImportService extends BaseService {
 
   private addressUrl = `${environment.server.url}/import/address`;
+  private templateUrl = `${environment.server.url}/import/template`;
 
   constructor(public snackBar: MatSnackBar, private http: HttpClient) {
     super(snackBar);
@@ -22,5 +24,18 @@ export class ImportService extends BaseService {
       .pipe(
         catchError(this.handleError<String>("import addresses", ""))
       );
+  }
+
+  downloadTemplate() : Observable<Blob> {
+    return this.http.get<Blob>(this.templateUrl, this.getResponseTypeBlobOptions())
+      .pipe(
+        catchError(this.handleError<Blob>("download template", new Blob()))
+      );
+  }
+
+  private getResponseTypeBlobOptions(): object {
+    return {
+      responseType: 'blob'
+    };
   }
 }
